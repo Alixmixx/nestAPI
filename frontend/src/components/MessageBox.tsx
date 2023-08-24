@@ -1,13 +1,12 @@
 import React from "react";
-import Message from "./Message";
+import Message, { MessageProps} from "./Message";
 
-interface MessageBoxProps {
-  sender: string;
-  username: string;
-  message: string;
-}
-
-export function MessageBox({ sender, username, message }: MessageBoxProps) {
+export function MessageBox({
+  sender,
+  username,
+  message,
+  posttime, 
+}: MessageProps) {
   // user
   return (
     <div>
@@ -26,7 +25,12 @@ export function MessageBox({ sender, username, message }: MessageBoxProps) {
             src="https://ih1.redbubble.net/image.1329995133.5500/st,small,507x507-pad,600x600,f8f8f8.jpg"
           />
           <div className="flr">
-            <Message message={message} />
+            <Message
+             sender={sender}
+              username={username}
+              message={message}
+              posttime={posttime}
+            />
           </div>
         </div>
       </article>

@@ -1,10 +1,14 @@
 import React from "react";
+import Timestamp from "./Timestamp";
 
-interface MessageProps {
+export interface MessageProps {
+  sender: string;
+  username: string;
   message: string;
+  posttime: string;
 }
 
-export default function Message({ message }: MessageProps) {
+export default function Message({ username, message, posttime }: MessageProps) {
   return (
     <div>
       <div className="messages">
@@ -12,6 +16,7 @@ export default function Message({ message }: MessageProps) {
           {message}
         </p>
       </div>
+      <Timestamp username={username} posttime={posttime} />
     </div>
   );
 }
