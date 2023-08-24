@@ -2,7 +2,7 @@ import React from "react";
 import Message, { MessageProps} from "./Message";
 
 export function MessageBox({
-  sender,
+  senderId,
   username,
   message,
   posttime, 
@@ -12,7 +12,7 @@ export function MessageBox({
     <div>
       <article
         className={
-          sender === username
+          senderId === username
             ? "msg-container msg-self"
             : "msg-container msg-remote"
         }
@@ -26,7 +26,7 @@ export function MessageBox({
           />
           <div className="flr">
             <Message
-             sender={sender}
+             senderId={senderId}
               username={username}
               message={message}
               posttime={posttime}

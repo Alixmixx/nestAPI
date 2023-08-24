@@ -1,51 +1,59 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import io, { Socket } from "socket.io-client";
 import { MessageInput } from "./components/MessageInput";
-import { Messages } from "./components/Messages";
 import ChatWindow, { ChatWindowProps } from "./components/ChatWindow";
 import { MessageProps } from "./components/Message";
 
 function App() {
-  const [socket, setSocket] = useState<Socket>();
+  const [socket, setSocket] = useState<Socket | undefined>(undefined); // Initialize socket as undefined
   const [messages, setMessages] = useState<ChatWindowProps["messages"]>([]);
 
-  const send = (value: string) => {
-    socket?.emit("message", value);
+  const send = (message: MessageProps) => {
+    socket?.emit('message', { senderId: message.senderId, message: message.message});
   };
 
   useEffect(() => {
     const newSocket = io("http://localhost:8001");
     setSocket(newSocket);
-  }, [setSocket]);
 
-  const messageListener = (value: string) => {
-    const newMessage: MessageProps = {
-      sender: "user",
-      username: "username",
-      message: value,
-      posttime: "now",
+    newSocket.emit('authenticate', { username: 'yourUsername'});
+    // Clean up the socket on component unmount
+    return () => {
+      newSocket.disconnect();
     };
-
-    setMessages((oldMessages) => [...oldMessages, newMessage]);
-  };
+  }, []); // Empty dependency array ensures this effect runs only once
 
   useEffect(() => {
-    socket?.on("message", messageListener);
-    return () => {
-      socket?.off("message", messageListener);
-    };
-  }, [messageListener]);
+    if (socket) {
+      const messageListener = ({senderId, message} : { senderId: string; message: string }) => {
+       console.log(senderId);
+        const newMessage: MessageProps = {
+          senderId: senderId,
+          username: "username",
+          message: message,
+          posttime: "now",
+        };
 
+        setMessages((oldMessages) => [...oldMessages, newMessage]);
+      };
+
+      socket.on('message', messageListener);
+
+      return () => {
+        socket.off('message', messageListener);
+      };
+    }
+  }, [socket]); // Make sure to include socket as a dependency
+
+  console.log(messages);
   return (
-    <>
-      <body>
-        <section className="chatbox">
-          <ChatWindow messages={messages} />
-          <MessageInput send={send} />
-        </section>
-      </body>
-    </>
+    <div className="App">
+      <section className="chatbox">
+        <ChatWindow messages={messages} />
+        <MessageInput user="Me" send={send} />
+      </section>
+    </div>
   );
 }
 

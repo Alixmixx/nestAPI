@@ -1,21 +1,35 @@
 import { ChangeEvent, useState } from "react";
 import styles from "./index.css";
 import React from "react";
+import { MessageProps } from "./Message";
 
-export function MessageInput({ send }: { send: (input: string) => void }) {
+export function MessageInput({
+  user,
+  send,
+}: {
+  user: string;
+  send: (message: MessageProps) => void;
+}) {
   const [input, setInput] = useState("");
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
 
+    console.log(user);
   return (
     <div>
       <form className="chat-input">
         <input onChange={onChange} value={input} placeholder="Type a message" />
         <button
-          onClick={() => {
-            send(input);
+          onClick={(event) => {
+            event.preventDefault();
+            send({
+              senderId: user,
+              username: "username",
+              message: input,
+              posttime: "now",
+            });
             setInput("");
           }}
         >
